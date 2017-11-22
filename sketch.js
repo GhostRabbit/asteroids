@@ -1,26 +1,26 @@
-var asteroids = []
-var lasers = []
-var ship
-var gameState = "gameOn"
-var score = 0
-var asteroidAdder
+let asteroids = []
+let lasers = []
+let ship
+let gameState = "gameOn"
+let score = 0
+let asteroidAdder
 
 function setup() {
-    createCanvas(windowWidth, windowHeight)
-    fullscreen(true)
-    
-    ship = new Ship()
-    for (var i = 0; i < 10; i++) {
+  createCanvas(windowWidth, windowHeight)
+  fullscreen(true)
+
+  ship = new Ship()
+  for (var i = 0; i < 10; i++) {
+    asteroids.push(newAsteroid())
+  }
+  asteroidAdder = setInterval(function () {
+    if (gameState === 'gameOver') {
+      clearInterval(asteroidAdder)
+    } else {
       asteroids.push(newAsteroid())
     }
-    asteroidAdder = setInterval(function() {
-      if (gameState === 'gameOver') {
-        clearInterval(asteroidAdder)
-      } else {
-        asteroids.push(newAsteroid())
-      }
-    }, 3000);
-   
+  }, 3000);
+
 }
 
 function draw() {
@@ -46,7 +46,7 @@ function drawObjects() {
   noFill()
   stroke(255)
   strokeWeight(2)
- 
+
   for (var i = 0; i < asteroids.length; i++) {
     asteroids[i].render()
     asteroids[i].update()
@@ -55,7 +55,7 @@ function drawObjects() {
   for (i = 0; i < lasers.length; i++) {
     lasers[i].render();
   }
-  
+
   fill(0);
   ship.render()
   ship.update()
@@ -63,7 +63,7 @@ function drawObjects() {
 
 function incrementGameState() {
   for (var i = lasers.length - 1; i >= 0; i--) {
-    if (lasers[i].update()) {
+    if (lasers[i].update()) { // Laser to be removed (fell off screen)
       lasers.splice(i, 1)
     } else {
       for (var j = asteroids.length - 1; j >= 0; j--) {
@@ -72,9 +72,9 @@ function incrementGameState() {
           asteroids = asteroids.concat(asteroids[j].split())
           asteroids.splice(j, 1)
           lasers.splice(i, 1)
-          score ++;
+          score++;
           break;
-        } 
+        }
       }
     }
   }
@@ -83,7 +83,7 @@ function incrementGameState() {
       // Asteroid hit ship
       gameState = "gameOver"
       break;
-    } 
+    }
   }
 }
 
