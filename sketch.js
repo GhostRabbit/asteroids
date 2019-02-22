@@ -7,7 +7,7 @@ let asteroidAdder
 
 function setup() {
   createCanvas(windowWidth, windowHeight)
-  fullscreen(true)
+  // fullscreen(true)
 
   ship = new Ship()
   for (var i = 0; i < 10; i++) {
