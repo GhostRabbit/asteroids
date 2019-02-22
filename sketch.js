@@ -25,66 +25,79 @@ function setup() {
 
 function draw() {
   if (gameState === "gameOn") {
-    drawObjects()
     incrementGameState()
-    textSize(32)
-    textAlign(LEFT)
-    stroke(128)
-    fill(255)
-    text("Score " + score, 20, height - 30)
+
+    background(0)
+    drawObjects()
+    drawScore()
   } else if (gameState === "gameOver") {
-    textSize(32)
-    textAlign(CENTER)
-    stroke(128)
-    fill(255)
-    text("Game Over", width / 2, height / 2)
+    drawGamwOver()
   }
 }
 
 function drawObjects() {
-  background(0)
   noFill()
   stroke(255)
   strokeWeight(2)
 
-  for (var i = 0; i < asteroids.length; i++) {
-    asteroids[i].render()
-    asteroids[i].update()
-  }
-
-  for (i = 0; i < lasers.length; i++) {
-    lasers[i].render();
-  }
+  asteroids.forEach(a => a.render())
+  lasers.forEach(l => l.render())
 
   fill(0);
   ship.render()
-  ship.update()
 }
 
 function incrementGameState() {
-  for (var i = lasers.length - 1; i >= 0; i--) {
-    if (lasers[i].update()) { // Laser to be removed (fell off screen)
-      lasers.splice(i, 1)
-    } else {
-      for (var j = asteroids.length - 1; j >= 0; j--) {
-        if (p5.Vector.dist(lasers[i].pos, asteroids[j].pos) < asteroids[j].r) {
-          // Laser hit asteroid
-          asteroids = asteroids.concat(asteroids[j].split())
-          asteroids.splice(j, 1)
-          lasers.splice(i, 1)
-          score++;
-          break;
-        }
+  // Update game objects
+  ship.update()
+  lasers.forEach(l => l.update())
+  asteroids.forEach(a => a.update())
+
+  // Collision detection
+  lasers.forEach(laser => {
+    asteroids.forEach(asteroid => {
+      if (p5.Vector.dist(laser.pos, asteroid.pos) < asteroid.r) {
+        laser.hits()
+        asteroid.hits()
+        score++;
       }
+    })
+  })
+
+  lasers = lasers.filter(laser => !laser.toBeRemoved());
+
+  // Split hit asteroids
+  asteroids = asteroids.flatMap(asteroid => {
+    if (asteroid.hit) {
+      return asteroid.split()
     }
-  }
-  for (var k = 0; k < asteroids.length; k++) {
-    if (p5.Vector.dist(ship.pos, asteroids[k].pos) < asteroids[k].r) {
+    return asteroid
+  })
+
+
+  // Ship hit detection
+  asteroids.forEach(asteroid => {
+    if (p5.Vector.dist(ship.pos, asteroid.pos) < asteroid.r) {
       // Asteroid hit ship
       gameState = "gameOver"
-      break;
     }
-  }
+  })
+}
+
+function drawScore() {
+  textSize(32)
+  textAlign(LEFT)
+  stroke(128)
+  fill(255)
+  text("Score " + score, 20, height - 30)
+}
+
+function drawGamwOver() {
+  textSize(32)
+  textAlign(CENTER)
+  stroke(128)
+  fill(255)
+  text("Game Over", width / 2, height / 2)
 }
 
 function keyPressed() {

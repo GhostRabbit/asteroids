@@ -15,6 +15,7 @@ class Asteroid {
     this.angle = 0
     this.angleVel = random(-0.05, 0.05)
     this.shape = []
+    this.hit = false
     var points = random(5, 10)
     for (var i = 0; i < points; i++) {
       const p = p5.Vector.fromAngle(map(i, 0, points, 0, TWO_PI)).mult(this.r * random(0.5, 1.3))
@@ -42,6 +43,10 @@ class Asteroid {
 
     if (this.pos.y < 0) this.pos.y = height
     else if (this.pos.y > height) this.pos.y = 0
+  }
+
+  hits() {
+    this.hit = true
   }
 
   split() {
